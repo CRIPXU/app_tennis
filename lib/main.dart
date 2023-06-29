@@ -1,6 +1,8 @@
 import 'package:cancha_tennis/model_agendamiento.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import 'agendamiento_provider.dart';
 import 'database_provider.dart';
 
 void main() async {
@@ -12,48 +14,41 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Agendamiento de Canchas de Tenis',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: FutureBuilder<List<Agendamiento>>(
-        future: DatabaseProvider.instance.getAgendamientos(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)   {
-            return const CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            final agendamientos = snapshot.data!;
-            return HomePage(agendamientos: agendamientos);
-          }
-        },
+    return ChangeNotifierProvider(
+      create: (_) => AgendamientosProvider(),
+      child: MaterialApp(
+        title: 'Agendamiento de Canchas de Tenis',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: HomePage(),
       ),
     );
   }
 }
 
 class HomePage extends StatelessWidget {
-  final List<Agendamiento> agendamientos;
-
-  HomePage({required this.agendamientos});
-
-
   @override
   Widget build(BuildContext context) {
+    final agendamientosProvider = Provider.of<AgendamientosProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agendamientos de Canchas de Tenis'),
       ),
-      body: ListView.builder(
-     itemCount: agendamientos.length,
-        itemBuilder: (context, index) {
-          final agendamiento = agendamientos[index];
-          return ListTile(
-            title: Text(agendamiento.cancha),
-            subtitle: Text(agendamiento.fecha),
-            trailing: Text(agendamiento.usuario),
+      body: Consumer<AgendamientosProvider>(
+        builder: (context, provider, _) {
+          final agendamientos = provider.agendamientos;
+          return ListView.builder(
+            itemCount: agendamientos.length,
+            itemBuilder: (context, index) {
+              final agendamiento = agendamientos[index];
+              return ListTile(
+                title: Text(agendamiento.cancha),
+                subtitle: Text(agendamiento.fecha),
+                trailing: Text(agendamiento.usuario),
+              );
+            },
           );
         },
       ),
@@ -108,15 +103,28 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
   };
 
   //Guardar
-  // void saveAgendamiento() async {
-  //   final agendamiento = Agendamiento(
-  //     id: 0,
-  //     cancha: selectedCancha.toString(),
-  //     fecha: selectedDate.toString(),
-  //     usuario: nombreController.text,
-  //   );
-  //   await dbProvider.insertAgendamiento(agendamiento);
-  // }
+  void saveAgendamiento() async {
+    if (selectedCancha == null || selectedDate == null) {
+      return;
+    }
+
+    final agendamiento = Agendamiento(
+      id: 0,
+      cancha: canchas[selectedCancha!]!,
+      fecha: selectedDate.toString(),
+      usuario: nombreController.text,
+    );
+
+    final agendamientosProvider =
+        Provider.of<AgendamientosProvider>(context, listen: false);
+    await agendamientosProvider.insertAgendamiento(agendamiento);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+
+  }
 
   //Obtener
   Future<List<Agendamiento>> getAgendamientos() async {
@@ -135,12 +143,12 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
     DatabaseProvider;
   }
 
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   super.dispose();
-  //   nombreController.dispose();
-  // }
+   @override
+   void dispose() {
+    // TODO: implement dispose
+     super.dispose();
+     nombreController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,20 +182,6 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
                 labelText: 'Cancha',
               ),
             ),
-            //   items: ['A', 'B', 'C'].asMap().entries.map<DropdownMenuItem<int>>(
-            //     (entry) {
-            //       final int index = entry.key;
-            //       final String value = entry.value;
-            //       return DropdownMenuItem<int>(
-            //         value: index,
-            //         child: Text('Cancha $value'),
-            //       );
-            //     },
-            //   ).toList(),
-            //   decoration: const InputDecoration(
-            //     labelText: 'Cancha',
-            //   ),
-            // ),
             TextField(
               controller: nombreController,
               decoration: const InputDecoration(labelText: 'Nombre'),
@@ -210,34 +204,6 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
                 });
               },
             ),
-            // DateTimePicker(
-            //   initialValue: DateTime.now().toString(),
-            //   firstDate: DateTime.now(),
-            //   lastDate: DateTime.now().add(Duration(days: 365)),
-            //   onChanged: (value) {
-            //     setState(() {
-            //       selectedDate = DateTime.parse(value);
-            //     });
-            //   },
-            // ),
-            // InkWell(
-            //   onTap: () {
-            //     _selectDate(context);
-            //   },
-            //   child: InputDecorator(
-            //     decoration: const InputDecoration(
-            //       labelText: 'Fecha',
-            //       suffixIcon: Icon(Icons.calendar_today),
-            //     ),
-            //     child: Text(
-            //       selectedDate != null
-            //           ? '${selectedDate!.day}/${selectedDate!
-            //           .month}/${selectedDate!.year}'
-            //           : 'Seleccione una fecha',
-            //       style: const TextStyle(fontSize: 16.0),
-            //     ),
-            //   ),
-            // ),
             // Aquí puedes añadir el campo para el nombre de la persona realizando el agendamiento
             const SizedBox(height: 16.0),
             ElevatedButton(
@@ -252,20 +218,5 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
         ),
       ),
     );
-  }
-
-  void saveAgendamiento() async {
-    if (selectedCancha == null || selectedDate == null) {
-      return;
-    }
-
-    final agendamiento = Agendamiento(
-      id: 0,
-      cancha: canchas[selectedCancha!]!,
-      fecha: selectedDate.toString(),
-      usuario: nombreController.text,
-    );
-
-    await dbProvider.insertAgendamiento(agendamiento);
   }
 }
