@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 
 import 'agendamiento_provider.dart';
 import 'database_provider.dart';
+import 'package:intl/intl.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     final agendamientosProvider = Provider.of<AgendamientosProvider>(context);
 
     return Scaffold(
@@ -39,13 +42,18 @@ class HomePage extends StatelessWidget {
       body: Consumer<AgendamientosProvider>(
         builder: (context, provider, _) {
           final agendamientos = provider.agendamientos;
+          // Ordenar los agendamientos por fecha (de forma ascendente)
+          agendamientos.sort((a, b) => a.fecha.compareTo(b.fecha));
+
           return ListView.builder(
             itemCount: agendamientos.length,
             itemBuilder: (context, index) {
               final agendamiento = agendamientos[index];
+              // Formatear la fecha de manera legible
+              final formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.parse(agendamiento.fecha));
               return ListTile(
                 title: Text(agendamiento.cancha),
-                subtitle: Text(agendamiento.fecha),
+                subtitle: Text(formattedDate),
                 trailing: Text(agendamiento.usuario),
               );
             },
