@@ -100,14 +100,34 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('Usuario: ${agendamiento.usuario}'),
-                    TextButton(
-                      child: const Icon(Icons.delete),
+                    IconButton(
+                      icon: Icon(Icons.delete),
                       onPressed: () {
-                        final agendamientosProvider =
-                            Provider.of<AgendamientosProvider>(context,
-                                listen: false);
-                        agendamientosProvider
-                            .deleteAgendamiento(agendamiento.id);
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Confirmar'),
+                              content:
+                                  const Text('¿Desea borrar el agendamiento?'),
+                              actions: [
+                                TextButton(
+                                  child: const Text('Cancelar'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                                TextButton(
+                                  child: const Text('borrar'),
+                                  onPressed: () {
+                                    final agendamientosProvider =
+                                        Provider.of<AgendamientosProvider>(context, listen: false);
+                                    agendamientosProvider.deleteAgendamiento(agendamiento.id);
+                                    Navigator.pop(context);
+                                  },
+                                )
+                              ],
+                            );
+                          },
+                        );
                       },
                     ),
                   ],
@@ -121,7 +141,8 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddAgendamientoPage()),
+            MaterialPageRoute(
+                builder: (context) => const AddAgendamientoPage()),
           );
         },
         child: const Icon(Icons.add),
@@ -150,6 +171,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
     2: 'C',
   };
 
+  //Guardar
   void saveAgendamiento() async {
     if (selectedCancha == null || selectedDate == null) {
       return;
@@ -162,8 +184,10 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
       usuario: nombreController.text,
     );
 
-    final agendamientosProvider = Provider.of<AgendamientosProvider>(context, listen: false);
-    final agendamientoGuardado = await agendamientosProvider.insertAgendamiento(agendamiento);
+    final agendamientosProvider =
+        Provider.of<AgendamientosProvider>(context, listen: false);
+    final agendamientoGuardado =
+        await agendamientosProvider.insertAgendamiento(agendamiento);
 
     if (agendamientoGuardado) {
       Navigator.pushReplacement(
@@ -176,7 +200,8 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
         builder: (context) {
           return AlertDialog(
             title: Text('No hay disponibilidad'),
-            content: Text('Ya se han agendado tres veces para esa cancha en ese día.'),
+            content: Text(
+                'Ya se han agendado tres veces para esa cancha en ese día.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -190,7 +215,6 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
       );
     }
   }
-
 
   //Obtener
   Future<List<Agendamiento>> getAgendamientos() async {
