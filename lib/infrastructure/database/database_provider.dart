@@ -1,4 +1,4 @@
-import 'package:cancha_tennis/model_agendamiento.dart';
+import 'package:cancha_tennis/domain/models/model_agendamiento.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -54,6 +54,20 @@ class DatabaseProvider {
     final List<Map<String, dynamic>> maps = await db.query('agendamientos');
     return maps.map((map) => Agendamiento.fromMap(map)).toList();
   }
+  //Obtener agendamiento por ID
+  Future<Agendamiento> getAgendamientoById(int id) async {
+    final db = await database;
+    final maps = await db.query(
+      'agendamientos',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (maps.isNotEmpty) {
+      return Agendamiento.fromMap(maps.first);
+    }
+    throw Exception('Agendamiento not found');
+  }
+
   //Eliminar
   Future<void> deleteAgendamiento(int id) async {
     final db = await database;

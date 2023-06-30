@@ -1,7 +1,6 @@
+import 'package:cancha_tennis/infrastructure/database/database_provider.dart';
 import 'package:flutter/material.dart';
-
-import 'database_provider.dart';
-import 'model_agendamiento.dart';
+import 'package:cancha_tennis/domain/models/model_agendamiento.dart';
 
 class AgendamientosProvider extends ChangeNotifier {
   List<Agendamiento> _agendamientos = [];
