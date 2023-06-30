@@ -43,7 +43,6 @@ class _HomePageState extends State<HomePage> {
               // Formatear la fecha de manera legible
               final formattedDate = DateFormat('yyyy-M-dd')
                   .format(DateTime.parse(agendamiento.fecha));
-              debugPrint(formattedDate);
 
               return ListTile(
                 title: Text('Cancha: ${agendamiento.cancha}'),
