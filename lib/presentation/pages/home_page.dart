@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                     Text('Usuario: ${agendamiento.usuario}'),
                     Text(formattedDate),
                     FutureBuilder<int>(
-                      future: weatherService.getRainProbability('Caracas', 1),
+                      future: weatherService.getRainProbability('Caracas', formattedDate),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                               'Error al obtener la probabilidad de lluvia');
                         } else {
                           final forecastData = snapshot.data;
-                          return Text('Pronóstico: $forecastData');
+                          return Text('Probabilidad de lluvia: $forecastData%');
                         }
                       },
                     ),

@@ -5,8 +5,8 @@ class WeatherService {
   final String apiKey = '9521e16f9d6c4d0bad8140730233006';
   final String baseUrl = 'http://api.weatherapi.com/v1/forecast.json';
 
-  Future<int> getRainProbability(String location, int days) async {
-    final response = await http.get(Uri.parse('http://api.weatherapi.com/v1/forecast.json?key=9521e16f9d6c4d0bad8140730233006&q=$location&days=$days&aqi=yes&alerts=yes'));
+  Future<int> getRainProbability(String location, String date) async {
+    final response = await http.get(Uri.parse('http://api.weatherapi.com/v1/forecast.json?key=9521e16f9d6c4d0bad8140730233006&q=$location&dt=$date&aqi=yes&alerts=yes'));
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
@@ -14,7 +14,7 @@ class WeatherService {
       final rainProbability = dayData['day']['daily_chance_of_rain'] as int;
       return rainProbability;
     } else {
-      throw Exception('Error al obtener el pronóstico del clima');
+      throw Exception('Error al obtener la probabilidad de lluvia');
     }
   }
 }
