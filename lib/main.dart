@@ -18,7 +18,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AgendamientosProvider()),
+        ChangeNotifierProvider<AgendamientosProvider>(
+          create: (context) => AgendamientosProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Agendamiento de Canchas de Tenis',
@@ -101,8 +103,11 @@ class _HomePageState extends State<HomePage> {
                     TextButton(
                       child: const Icon(Icons.delete),
                       onPressed: () {
-                        final agendamientosProvider = Provider.of<AgendamientosProvider>(context,listen: false);
-                        agendamientosProvider.deleteAgendamiento(agendamiento.id);
+                        final agendamientosProvider =
+                            Provider.of<AgendamientosProvider>(context,
+                                listen: false);
+                        agendamientosProvider
+                            .deleteAgendamiento(agendamiento.id);
                       },
                     ),
                   ],
@@ -116,7 +121,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddAgendamientoPage()),
+            MaterialPageRoute(builder: (context) => const AddAgendamientoPage()),
           );
         },
         child: const Icon(Icons.add),
@@ -126,6 +131,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class AddAgendamientoPage extends StatefulWidget {
+  const AddAgendamientoPage({super.key});
+
   @override
   _AddAgendamientoPageState createState() => _AddAgendamientoPageState();
 }
@@ -137,32 +144,12 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
   DateTime? selectedDate;
   final TextEditingController nombreController = TextEditingController();
 
-  //Metodos
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-
-      // Aquí puedes hacer una llamada a una API para obtener el porcentaje de probabilidad de lluvia para la fecha seleccionada
-      // y mostrarlo en pantalla
-    }
-  }
-
   final Map<int, String> canchas = {
     0: 'A',
     1: 'B',
     2: 'C',
   };
 
-  //Guardar
   void saveAgendamiento() async {
     if (selectedCancha == null || selectedDate == null) {
       return;
@@ -175,15 +162,35 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
       usuario: nombreController.text,
     );
 
-    final agendamientosProvider =
-        Provider.of<AgendamientosProvider>(context, listen: false);
-    await agendamientosProvider.insertAgendamiento(agendamiento);
+    final agendamientosProvider = Provider.of<AgendamientosProvider>(context, listen: false);
+    final agendamientoGuardado = await agendamientosProvider.insertAgendamiento(agendamiento);
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+    if (agendamientoGuardado) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('No hay disponibilidad'),
+            content: Text('Ya se han agendado tres veces para esa cancha en ese día.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Aceptar'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
+
 
   //Obtener
   Future<List<Agendamiento>> getAgendamientos() async {
@@ -269,7 +276,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
               onPressed: () {
                 saveAgendamiento();
                 // Aquí debes implementar la lógica para guardar el agendamiento localmente
-                Navigator.pop(context);
+                //Navigator.pop(context);
               },
               child: const Text('Guardar Agendamiento'),
             ),

@@ -44,7 +44,8 @@ class DatabaseProvider {
   }
   //insertar
   Future<void> insertAgendamiento(Agendamiento agendamiento) async {
-    final db = await database;
+    //final db = await database;
+    final db = await DatabaseProvider.instance.database;
     await db.insert('agendamientos', agendamiento.toMap());
   }
   //obtener
