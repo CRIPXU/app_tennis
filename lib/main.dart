@@ -7,7 +7,6 @@ import 'agendamiento_provider.dart';
 import 'database_provider.dart';
 import 'package:intl/intl.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseProvider.instance.initializeDatabaseProvider();
@@ -43,13 +42,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    final agendamientosProvider = Provider.of<AgendamientosProvider>(context, listen: false);
+    final agendamientosProvider =
+        Provider.of<AgendamientosProvider>(context, listen: false);
     agendamientosProvider.loadAgendamientos();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agendamientos de Canchas de Tenis'),
@@ -65,32 +64,49 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, index) {
               final agendamiento = agendamientos[index];
 
-
               // Formatear la fecha de manera legible
-              final formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.parse(agendamiento.fecha));
+              final formattedDate = DateFormat('dd/MM/yyyy')
+                  .format(DateTime.parse(agendamiento.fecha));
 
               return ListTile(
                 title: Text('Cancha: ${agendamiento.cancha}'),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text('Usuario: ${agendamiento.usuario}'),
                     Text(formattedDate),
                     FutureBuilder<int>(
-                      future: weatherService.obtenerProbabilidadLluvia(agendamiento.fecha),
+                      future: weatherService
+                          .obtenerProbabilidadLluvia(agendamiento.fecha),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const CircularProgressIndicator();
                         } else if (snapshot.hasError) {
-                          return const Text('Error al obtener la probabilidad de lluvia');
+                          return const Text(
+                              'Error al obtener la probabilidad de lluvia');
                         } else {
                           final probabilidadLluvia = snapshot.data;
-                          return Text('Probabilidad de lluvia: $probabilidadLluvia%');
+                          return Text(
+                              'Probabilidad de lluvia: $probabilidadLluvia%');
                         }
                       },
                     ),
                   ],
                 ),
-                trailing: Text('Usuario: ${agendamiento.usuario}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Usuario: ${agendamiento.usuario}'),
+                    TextButton(
+                      child: const Icon(Icons.delete),
+                      onPressed: () {
+                        final agendamientosProvider = Provider.of<AgendamientosProvider>(context,listen: false);
+                        agendamientosProvider.deleteAgendamiento(agendamiento.id);
+                      },
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -167,7 +183,6 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
       context,
       MaterialPageRoute(builder: (context) => HomePage()),
     );
-
   }
 
   //Obtener
@@ -187,11 +202,11 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
     DatabaseProvider;
   }
 
-   @override
-   void dispose() {
+  @override
+  void dispose() {
     // TODO: implement dispose
-     super.dispose();
-     nombreController.dispose();
+    super.dispose();
+    nombreController.dispose();
   }
 
   @override
