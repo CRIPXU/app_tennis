@@ -2,20 +2,19 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class WeatherService {
-  Future<int> obtenerProbabilidadLluvia(String fecha) async {
-    // Make an HTTP request to the weather API
-    final response = await http.get(Uri.parse('https://api.tutiempo.net/json/?lan=es&apid=zxYqz44qXX4fli6&lid=3768'));
+  final String apiKey = '9521e16f9d6c4d0bad8140730233006';
+  final String baseUrl = 'http://api.weatherapi.com/v1/forecast.json';
+
+  Future<int> getRainProbability(String location, int days) async {
+    final response = await http.get(Uri.parse('http://api.weatherapi.com/v1/forecast.json?key=9521e16f9d6c4d0bad8140730233006&q=$location&days=$days&aqi=yes&alerts=yes'));
 
     if (response.statusCode == 200) {
       final jsonData = json.decode(response.body);
-      final dayData = jsonData['day1'];
-
-      // Obtain the rain probability from the API response
-      final rainProbability = dayData['humidity'] as int;
+      final dayData = jsonData['forecast']['forecastday'][0];
+      final rainProbability = dayData['day']['daily_chance_of_rain'] as int;
       return rainProbability;
     } else {
-      throw Exception('Error al obtener datos meteorológicos');
+      throw Exception('Error al obtener el pronóstico del clima');
     }
   }
 }
-

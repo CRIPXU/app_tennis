@@ -40,6 +40,7 @@ dependencies:
   intl: ^0.18.1
   dio: ^4.0.0
   http: ^0.13.5
+  achievement_view: ^1.0.1
 
 
 dev_dependencies:

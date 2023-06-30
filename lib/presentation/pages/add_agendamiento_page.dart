@@ -4,8 +4,6 @@ import 'package:cancha_tennis/infrastructure/database/database_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page.dart';
-
 class AddAgendamientoPage extends StatefulWidget {
   const AddAgendamientoPage({super.key});
 
@@ -19,6 +17,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
   int? selectedCancha;
   DateTime? selectedDate;
   final TextEditingController nombreController = TextEditingController();
+  AgendamientosProvider? _agendamientosProvider;
 
   final Map<int, String> canchas = {
     0: 'A',
@@ -45,10 +44,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
     await agendamientosProvider.insertAgendamiento(agendamiento);
 
     if (agendamientoGuardado) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, '/home');
     } else {
       showDialog(
         context: context,
@@ -89,10 +85,19 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    _agendamientosProvider ??= Provider.of<AgendamientosProvider>(context);
+  }
+
+  @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     nombreController.dispose();
+    _agendamientosProvider = null;
+    super.dispose();
+
   }
 
   @override

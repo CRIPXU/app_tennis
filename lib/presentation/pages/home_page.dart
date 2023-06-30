@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
     agendamientosProvider.loadAgendamientos();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,8 +41,9 @@ class _HomePageState extends State<HomePage> {
               final agendamiento = agendamientos[index];
 
               // Formatear la fecha de manera legible
-              final formattedDate = DateFormat('dd/MM/yyyy')
+              final formattedDate = DateFormat('yyyy-M-dd')
                   .format(DateTime.parse(agendamiento.fecha));
+              debugPrint(formattedDate);
 
               return ListTile(
                 title: Text('Cancha: ${agendamiento.cancha}'),
@@ -51,8 +53,7 @@ class _HomePageState extends State<HomePage> {
                     Text('Usuario: ${agendamiento.usuario}'),
                     Text(formattedDate),
                     FutureBuilder<int>(
-                      future: weatherService
-                          .obtenerProbabilidadLluvia(agendamiento.fecha),
+                      future: weatherService.getRainProbability('Caracas', 1),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -61,9 +62,8 @@ class _HomePageState extends State<HomePage> {
                           return const Text(
                               'Error al obtener la probabilidad de lluvia');
                         } else {
-                          final probabilidadLluvia = snapshot.data;
-                          return Text(
-                              'Probabilidad de lluvia: $probabilidadLluvia%');
+                          final forecastData = snapshot.data;
+                          return Text('Pronóstico: $forecastData');
                         }
                       },
                     ),
