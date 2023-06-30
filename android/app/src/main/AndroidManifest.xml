@@ -3,7 +3,6 @@
 
     <application
         android:name="${applicationName}"
-        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher"
         android:label="cancha_tennis">
 

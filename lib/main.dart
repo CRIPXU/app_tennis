@@ -1,4 +1,5 @@
 import 'package:cancha_tennis/model_agendamiento.dart';
+import 'package:cancha_tennis/weather_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,8 +17,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AgendamientosProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AgendamientosProvider()),
+      ],
       child: MaterialApp(
         title: 'Agendamiento de Canchas de Tenis',
         theme: ThemeData(
@@ -29,11 +32,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final WeatherService weatherService = WeatherService();
+
+  @override
+  void initState() {
+    super.initState();
+    final agendamientosProvider = Provider.of<AgendamientosProvider>(context, listen: false);
+    agendamientosProvider.loadAgendamientos();
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    final agendamientosProvider = Provider.of<AgendamientosProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -49,12 +64,33 @@ class HomePage extends StatelessWidget {
             itemCount: agendamientos.length,
             itemBuilder: (context, index) {
               final agendamiento = agendamientos[index];
+
+
               // Formatear la fecha de manera legible
               final formattedDate = DateFormat('dd/MM/yyyy').format(DateTime.parse(agendamiento.fecha));
+
               return ListTile(
-                title: Text(agendamiento.cancha),
-                subtitle: Text(formattedDate),
-                trailing: Text(agendamiento.usuario),
+                title: Text('Cancha: ${agendamiento.cancha}'),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(formattedDate),
+                    FutureBuilder<int>(
+                      future: weatherService.obtenerProbabilidadLluvia(agendamiento.fecha),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return const Text('Error al obtener la probabilidad de lluvia');
+                        } else {
+                          final probabilidadLluvia = snapshot.data;
+                          return Text('Probabilidad de lluvia: $probabilidadLluvia%');
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                trailing: Text('Usuario: ${agendamiento.usuario}'),
               );
             },
           );
