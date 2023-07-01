@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightGreen,
+      backgroundColor: Colors.lightGreen[800],
       body: NestedScrollView(
         //headerSliverBuilder: (context, innerBoxIsScrolled) {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -49,26 +49,24 @@ class _HomePageState extends State<HomePage> {
               snap: false,
               elevation: 5,
               flexibleSpace: FlexibleSpaceBar(
-                //centerTitle: true,
-                expandedTitleScale: 1,
-                title: const Text(
-                  'Agenda',
-                  style: TextStyle(fontSize: 15),
+                collapseMode: CollapseMode.parallax,
+                title: Text(
+                  'Tennis App',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.lightGreen[800],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 background: CachedNetworkImage(
                   placeholder: (context, url) {
                     return Image.network(
                       'https://i.pinimg.com/564x/ff/42/4a/ff424a8878366f72c1e02a0a7c965935.jpg',
                       fit: BoxFit.cover,
-                      isAntiAlias: false,
-                      filterQuality: FilterQuality.low,
-                      gaplessPlayback: false,
-
-
                     );
                   },
                   imageUrl:
-                      'https://i.pinimg.com/564x/1f/32/31/1f3231213a41a42089ffd90365ddcc59.jpg',
+                      'https://i.pinimg.com/564x/ff/42/4a/ff424a8878366f72c1e02a0a7c965935.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -77,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         },
         body: Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24), color: Colors.black26),
+              borderRadius: BorderRadius.circular(24), color: Colors.white),
           child: Consumer<AgendamientosProvider>(
             builder: (context, provider, _) {
               final agendamientos = provider.agendamientos;
@@ -94,19 +92,28 @@ class _HomePageState extends State<HomePage> {
                   return Stack(
                     children: [
                       CachedNetworkImage(
-                          placeholder: (context, url) => Image.network(
-                                'https://i.pinimg.com/564x/1b/8e/94/1b8e94207f7ce4369d654bcb516c1212.jpg',
-                                fit: BoxFit.cover,
-                              ),
-                          imageUrl:
-                              'https://i.pinimg.com/564x/1b/8e/94/1b8e94207f7ce4369d654bcb516c1212.jpg'),
-                      Text(
-                        'Cancha: ${agendamiento.cancha}',
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
+                        placeholder: (context, url) => Image.network(
+                          'https://i.pinimg.com/564x/1b/8e/94/1b8e94207f7ce4369d654bcb516c1212.jpg',
+                          fit: BoxFit.cover,
+                          isAntiAlias: true,
+                          color: Colors.lightGreen,
+                          colorBlendMode: BlendMode.hue,
+                        ),
+                        imageUrl:
+                            'https://i.pinimg.com/564x/1b/8e/94/1b8e94207f7ce4369d654bcb516c1212.jpg',
+                        fit: BoxFit.cover,
+                        color: Colors.lightGreen,
+                        colorBlendMode: BlendMode.hue,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 150),
+                        child: Text(
+                          'Cancha: ${agendamiento.cancha}',
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 220, top: 10),
@@ -120,14 +127,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       ListTile(
-                        // title: Text(
-                        //   'Cancha: ${agendamiento.cancha}',
-                        //   textAlign: TextAlign.start,
-                        //   style: const TextStyle(
-                        //       fontSize: 20,
-                        //       fontWeight: FontWeight.bold,
-                        //       color: Colors.white),
-                        // ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -189,7 +188,10 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete),
+                          icon: const Icon(
+                            Icons.delete,
+                            size: 30,
+                          ),
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -239,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                 builder: (context) => const AddAgendamientoPage()),
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.border_color_outlined),
       ),
     );
   }
