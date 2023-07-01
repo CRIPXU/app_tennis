@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     final agendamientosProvider =
         Provider.of<AgendamientosProvider>(context, listen: false);
-    //agendamientosProvider.loadAgendamientos();
+    agendamientosProvider.loadAgendamientos();
   }
 
   // ...
