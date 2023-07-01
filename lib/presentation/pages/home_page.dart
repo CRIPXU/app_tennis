@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //Var
   final WeatherService weatherService = WeatherService();
-  String rainAnimationFile = 'rain.json';
+  String rainAnimationFile = 'heavy_rain.json';
 
   @override
   void initState() {
@@ -34,13 +34,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   //Metodos
+  Future<void> updateRainAnimationFile(int rainProbability) async {
+    if (rainProbability != null) {
+      if (rainProbability > 81) {
+        rainAnimationFile = 'heavy_rain.json';
+      } else if (rainProbability > 50) {
+        rainAnimationFile = 'moderate_rain.json';
+      } else {
+        rainAnimationFile = 'sun.json';
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightGreen[800],
       body: NestedScrollView(
-        //headerSliverBuilder: (context, innerBoxIsScrolled) {
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
             SliverAppBar(
@@ -86,9 +96,13 @@ class _HomePageState extends State<HomePage> {
                 itemCount: agendamientos.length,
                 itemBuilder: (context, index) {
                   final agendamiento = agendamientos[index];
+
+
                   // Formatear la fecha de manera legible
                   final formattedDate = DateFormat('yyyy-M-dd')
                       .format(DateTime.parse(agendamiento.fecha));
+
+
                   return Stack(
                     children: [
                       CachedNetworkImage(
@@ -112,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                           style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey),
+                              color: Colors.black),
                         ),
                       ),
                       Padding(
@@ -136,48 +150,56 @@ class _HomePageState extends State<HomePage> {
                                     urlImage:
                                         'https://i.pinimg.com/564x/1e/00/88/1e0088fd384c97dfe1f298c73673adcf.jpg'),
                                 const SizedBox(width: 10),
-                                Text('Usuario: ${agendamiento.usuario}'),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 5, top: 28),
+                                  child: Text(
+                                    'Usuario: ${agendamiento.usuario}',
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
                               ],
                             ),
                             Row(
                               children: [
                                 contentInfo(
                                   icon: const Icon(Icons.date_range),
-                                  text: Text('fecha: ${formattedDate}'),
+                                  text: Text(
+                                    'fecha: ${formattedDate}',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
                                 ),
                               ],
                             ),
                             Row(
                               children: [
                                 FutureBuilder<int>(
-                                  future: weatherService.getRainProbability(
-                                      'Caracas', formattedDate),
+                                  future:
+                                  weatherService.getRainProbability('Caracas', formattedDate),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return const CircularProgressIndicator();
                                     } else if (snapshot.hasError) {
                                       return const Text(
-                                          'No tenemos registros de provabilidad de lluvia');
+                                        'Probabilidad de lluvia: 0%',
+                                        style: TextStyle(color: Colors.black),
+                                      );
                                     } else {
                                       final rainProbability = snapshot.data;
 
-                                      // Cambiar el archivo de animación de lluvia según la probabilidad
-                                      if (rainProbability != null) {
-                                        rainAnimationFile = 'sun.json';
-                                        if (rainProbability > 50) {
-                                          rainAnimationFile = 'rain.json';
-                                        } else if (rainProbability > 25) {
-                                          rainAnimationFile =
-                                              'moderate_rain.json';
-                                        } else {
-                                          rainAnimationFile = 'sun.json';
-                                        }
-                                      }
+                                      // Actualizar el archivo de animación de lluvia
+                                      updateRainAnimationFile(rainProbability!);
+
                                       return contentInfo(
                                           icon: const Icon(Icons.cloud),
                                           text: Text(
-                                              'Probabilidad de lluvia:  $rainProbability%'));
+                                            'Probabilidad de lluvia:  $rainProbability%',
+                                            style:
+                                                const TextStyle(color: Colors.black),
+                                          ));
                                       // Text(
                                       //   '$rainProbability%');
                                     }

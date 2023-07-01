@@ -2,8 +2,9 @@
 class Assets {
   Assets._();
 
+  static const String canchaTennisImagesModerateRain = 'images/moderate_rain.json';
   static const String imagesModerateRain = 'images/moderate_rain.json';
-  static const String imagesRain = 'images/rain.json';
+  static const String imagesRain = 'images/heavy_rain.json';
   static const String imagesSun = 'images/sun.json';
 
 }
