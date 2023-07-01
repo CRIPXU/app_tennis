@@ -47,14 +47,14 @@ class _HomePageState extends State<HomePage> {
               expandedHeight: 220.0,
               floating: true,
               snap: false,
-              elevation: 5,
+              elevation: 50,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.parallax,
-                title: Text(
+                title: const Text(
                   'Tennis App',
                   style: TextStyle(
                     fontSize: 25,
-                    color: Colors.lightGreen[800],
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey),
+                              color: Colors.black),
                         ),
                       ),
                       Padding(
@@ -135,15 +135,26 @@ class _HomePageState extends State<HomePage> {
                                 avatar(
                                     urlImage:
                                         'https://i.pinimg.com/564x/1e/00/88/1e0088fd384c97dfe1f298c73673adcf.jpg'),
-                                const SizedBox(width: 10),
-                                Text('Usuario: ${agendamiento.usuario}'),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 5, top: 28),
+                                  child: Text(
+                                    'Usuario: ${agendamiento.usuario}',
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
                               ],
                             ),
                             Row(
                               children: [
                                 contentInfo(
                                   icon: const Icon(Icons.date_range),
-                                  text: Text('fecha: ${formattedDate}'),
+                                  text: Text(
+                                    'fecha: ${formattedDate}',
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
                                 ),
                               ],
                             ),
@@ -157,19 +168,28 @@ class _HomePageState extends State<HomePage> {
                                         ConnectionState.waiting) {
                                       return const CircularProgressIndicator();
                                     } else if (snapshot.hasError) {
-                                      return const Text(
-                                          'No tenemos registros de provabilidad de lluvia');
+                                      return const
+                                      Text(
+                                        'Probabilidad de lluvia: 0%',
+                                        style: TextStyle(color: Colors.black),
+                                      );
                                     } else {
                                       final rainProbability = snapshot.data;
 
                                       // Cambiar el archivo de animación de lluvia según la probabilidad
                                       if (rainProbability != null) {
                                         rainAnimationFile = 'sun.json';
-                                        if (rainProbability > 50) {
+                                        if (rainProbability > 81) {
                                           rainAnimationFile = 'rain.json';
-                                        } else if (rainProbability > 25) {
+                                        }
+                                        if (rainProbability > 50) {
                                           rainAnimationFile =
                                               'moderate_rain.json';
+                                        }
+                                        if (rainProbability > 25) {
+                                          rainAnimationFile = 'sun.json';
+                                        } else if (rainProbability > 25) {
+                                          rainAnimationFile = 'sun.json';
                                         } else {
                                           rainAnimationFile = 'sun.json';
                                         }
@@ -177,7 +197,10 @@ class _HomePageState extends State<HomePage> {
                                       return contentInfo(
                                           icon: const Icon(Icons.cloud),
                                           text: Text(
-                                              'Probabilidad de lluvia:  $rainProbability%'));
+                                            'Probabilidad de lluvia:  $rainProbability%',
+                                            style:
+                                                const TextStyle(color: Colors.black),
+                                          ));
                                       // Text(
                                       //   '$rainProbability%');
                                     }
