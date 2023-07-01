@@ -42,3 +42,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+images/send.json
+images/rain.json
+lib/presentation/widgets/loading_custom.dart
