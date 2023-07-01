@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cancha_tennis/application/providers/agendamiento_provider.dart';
 import 'package:cancha_tennis/infrastructure/services/weather_service.dart';
 import 'package:cancha_tennis/presentation/pages/add_agendamiento_page.dart';
+import 'package:cancha_tennis/presentation/widgets/widget_avatar.dart';
+import 'package:cancha_tennis/presentation/widgets/widget_content_info.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import '../../application/providers/agendamiento_provider.dart';
-import '../widgets/widget_avatar.dart';
-import '../widgets/widget_content_info.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,36 +15,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //Var
   final WeatherService weatherService = WeatherService();
-  String rainAnimationFile = 'heavy_rain.json';
+  String rainAnimationFile = 'moderate_rain.json';
 
   @override
   void initState() {
     super.initState();
     final agendamientosProvider =
         Provider.of<AgendamientosProvider>(context, listen: false);
-    agendamientosProvider.loadAgendamientos();
+    //agendamientosProvider.loadAgendamientos();
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  //Metodos
-  Future<void> updateRainAnimationFile(int rainProbability) async {
-    if (rainProbability != null) {
-      if (rainProbability > 81) {
-        rainAnimationFile = 'heavy_rain.json';
-      } else if (rainProbability > 50) {
-        rainAnimationFile = 'moderate_rain.json';
-      } else {
-        rainAnimationFile = 'sun.json';
-      }
-    }
-  }
+  // ...
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +42,11 @@ class _HomePageState extends State<HomePage> {
               elevation: 5,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.parallax,
-                title: Text(
+                title: const Text(
                   'Tennis App',
                   style: TextStyle(
-                    fontSize: 25,
-                    color: Colors.lightGreen[800],
+                    fontSize: 35,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -85,23 +67,28 @@ class _HomePageState extends State<HomePage> {
         },
         body: Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24), color: Colors.white),
+            borderRadius: BorderRadius.circular(24),
+            color: Colors.white,
+          ),
           child: Consumer<AgendamientosProvider>(
             builder: (context, provider, _) {
               final agendamientos = provider.agendamientos;
-              // Ordenar los agendamientos por fecha (de forma ascendente)
               agendamientos.sort((a, b) => a.fecha.compareTo(b.fecha));
-
+              if (agendamientos.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 35,top: 430),
+                  child: Text(
+                    'No tienes agendamientos, agrega aquí 👇',
+                    style: TextStyle(fontSize: 19),
+                  ),
+                );
+              }
               return ListView.builder(
                 itemCount: agendamientos.length,
                 itemBuilder: (context, index) {
                   final agendamiento = agendamientos[index];
-
-
-                  // Formatear la fecha de manera legible
-                  final formattedDate = DateFormat('yyyy-M-dd')
+                  final formattedDate = DateFormat('yyyy-MM-dd')
                       .format(DateTime.parse(agendamiento.fecha));
-
 
                   return Stack(
                     children: [
@@ -124,9 +111,10 @@ class _HomePageState extends State<HomePage> {
                         child: Text(
                           'Cancha: ${agendamiento.cancha}',
                           style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                       Padding(
@@ -147,17 +135,18 @@ class _HomePageState extends State<HomePage> {
                             Row(
                               children: [
                                 avatar(
-                                    urlImage:
-                                        'https://i.pinimg.com/564x/1e/00/88/1e0088fd384c97dfe1f298c73673adcf.jpg'),
-                                const SizedBox(width: 10),
+                                  urlImage:
+                                      'https://i.pinimg.com/564x/1e/00/88/1e0088fd384c97dfe1f298c73673adcf.jpg',
+                                ),
                                 Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 5, top: 28),
+                                      const EdgeInsets.only(left: 15, top: 25),
                                   child: Text(
                                     'Usuario: ${agendamiento.usuario}',
                                     style: const TextStyle(
                                         color: Colors.black,
-                                        fontWeight: FontWeight.w500),
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 15),
                                   ),
                                 ),
                               ],
@@ -167,8 +156,10 @@ class _HomePageState extends State<HomePage> {
                                 contentInfo(
                                   icon: const Icon(Icons.date_range),
                                   text: Text(
-                                    'fecha: ${formattedDate}',
-                                    style: const TextStyle(color: Colors.black),
+                                    'Fecha: $formattedDate',
+                                    style: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ],
@@ -176,8 +167,8 @@ class _HomePageState extends State<HomePage> {
                             Row(
                               children: [
                                 FutureBuilder<int>(
-                                  future:
-                                  weatherService.getRainProbability('Caracas', formattedDate),
+                                  future: weatherService.getRainProbability(
+                                      'Caracas', formattedDate),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
@@ -190,18 +181,25 @@ class _HomePageState extends State<HomePage> {
                                     } else {
                                       final rainProbability = snapshot.data;
 
-                                      // Actualizar el archivo de animación de lluvia
-                                      updateRainAnimationFile(rainProbability!);
-
+                                      if (rainProbability != null) {
+                                        rainAnimationFile = 'sun.json';
+                                        if (rainProbability > 80) {
+                                          rainAnimationFile =
+                                              'moderate_rain.json';
+                                        } else if (rainProbability > 25) {
+                                          rainAnimationFile =
+                                              'moderate_rain.json';
+                                        } else {
+                                          rainAnimationFile = 'sun.json';
+                                        }
+                                      }
                                       return contentInfo(
-                                          icon: const Icon(Icons.cloud),
-                                          text: Text(
-                                            'Probabilidad de lluvia:  $rainProbability%',
-                                            style:
-                                                const TextStyle(color: Colors.black),
-                                          ));
-                                      // Text(
-                                      //   '$rainProbability%');
+                                        icon: const Icon(Icons.cloud),
+                                        text: Text(
+                                          'Probabilidad de lluvia: $rainProbability%',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      );
                                     }
                                   },
                                 ),
@@ -228,7 +226,7 @@ class _HomePageState extends State<HomePage> {
                                       onPressed: () => Navigator.pop(context),
                                     ),
                                     TextButton(
-                                      child: const Text('borrar'),
+                                      child: const Text('Borrar'),
                                       onPressed: () {
                                         final agendamientosProvider =
                                             Provider.of<AgendamientosProvider>(
@@ -239,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                                                 agendamiento.id);
                                         Navigator.pop(context);
                                       },
-                                    )
+                                    ),
                                   ],
                                 );
                               },

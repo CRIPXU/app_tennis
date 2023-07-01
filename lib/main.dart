@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'application/providers/agendamiento_provider.dart';
 import 'infrastructure/database/database_provider.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseProvider.instance.initializeDatabaseProvider();
@@ -17,8 +16,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AgendamientosProvider>(
-          create: (context) => AgendamientosProvider(),
-        ),
+            create: (context) => AgendamientosProvider(),
+            ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -27,11 +26,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
         ),
         initialRoute: '/home',
-        routes: {
-          '/home': (_) => HomePage()
-        },
+        routes: {'/home': (_) => HomePage()},
       ),
     );
   }
 }
-

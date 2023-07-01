@@ -12,6 +12,7 @@ class WeatherService {
       final jsonData = json.decode(response.body);
       final dayData = jsonData['forecast']['forecastday'][0];
       final rainProbability = dayData['day']['daily_chance_of_rain'] as int;
+      print(rainProbability);
       return rainProbability;
     } else {
       throw Exception('Error al obtener la probabilidad de lluvia');
