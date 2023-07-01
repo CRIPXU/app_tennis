@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/loading_custom.dart';
+
 class AddAgendamientoPage extends StatefulWidget {
   const AddAgendamientoPage({super.key});
 
@@ -14,17 +16,22 @@ class AddAgendamientoPage extends StatefulWidget {
 
 class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
   //VAR
-  final DatabaseProvider dbProvider = DatabaseProvider.instance;
   int? selectedCancha;
   DateTime? selectedDate;
-  final TextEditingController nombreController = TextEditingController();
+  ValueNotifier<bool> isLoading = ValueNotifier(false);
   AgendamientosProvider? _agendamientosProvider;
+  final DatabaseProvider dbProvider = DatabaseProvider.instance;
+
+  //Controller
+  final TextEditingController nombreController = TextEditingController();
 
   final Map<int, String> canchas = {
     0: 'A',
     1: 'B',
     2: 'C',
   };
+
+  //Metodos
 
   //Guardar
   void saveAgendamiento() async {
@@ -40,9 +47,9 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
     );
 
     final agendamientosProvider =
-    Provider.of<AgendamientosProvider>(context, listen: false);
+        Provider.of<AgendamientosProvider>(context, listen: false);
     final agendamientoGuardado =
-    await agendamientosProvider.insertAgendamiento(agendamiento);
+        await agendamientosProvider.insertAgendamiento(agendamiento);
 
     if (agendamientoGuardado) {
       Navigator.pushReplacementNamed(context, '/home');
@@ -112,7 +119,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Lottie.asset('images/ball.json',height: 250),
+              Lottie.asset('images/ball.json', height: 250),
               DropdownButtonFormField<int>(
                 value: selectedCancha,
                 onChanged: (value) {
@@ -121,7 +128,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
                   });
                 },
                 items: canchas.entries.map<DropdownMenuItem<int>>(
-                      (entry) {
+                  (entry) {
                     final int index = entry.key;
                     final String value = entry.value;
                     return DropdownMenuItem<int>(
@@ -140,7 +147,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                child: const Icon(Icons.calendar_month,size: 30),
+                child: const Icon(Icons.calendar_month, size: 30),
                 onPressed: () {
                   showDatePicker(
                     context: context,
@@ -160,7 +167,7 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 style: ButtonStyle(
-                  fixedSize: MaterialStateProperty.all( const Size(350, 80)),
+                  fixedSize: MaterialStateProperty.all(const Size(350, 80)),
                   elevation: MaterialStateProperty.all(5),
                 ),
                 onPressed: () {

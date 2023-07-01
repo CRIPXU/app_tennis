@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
               expandedHeight: 220.0,
               floating: true,
               snap: false,
-              elevation: 5,
+              elevation: 50,
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.parallax,
                 title: const Text(
@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               agendamientos.sort((a, b) => a.fecha.compareTo(b.fecha));
               if (agendamientos.isEmpty) {
                 return Padding(
-                  padding: const EdgeInsets.only(left: 35,top: 430),
+                  padding: const EdgeInsets.only(left: 35, top: 430),
                   child: Text(
                     'No tienes agendamientos, agrega aquí 👇',
                     style: TextStyle(fontSize: 19),
@@ -189,6 +189,11 @@ class _HomePageState extends State<HomePage> {
                                         } else if (rainProbability > 25) {
                                           rainAnimationFile =
                                               'moderate_rain.json';
+                                        }
+                                        if (rainProbability > 25) {
+                                          rainAnimationFile = 'sun.json';
+                                        } else if (rainProbability > 25) {
+                                          rainAnimationFile = 'sun.json';
                                         } else {
                                           rainAnimationFile = 'sun.json';
                                         }
