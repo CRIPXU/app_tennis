@@ -3,12 +3,11 @@ class Assets {
   Assets._();
 
   static const String canchaTennisImagesBall = 'images/ball.json';
-  static const String canchaTennisImagesModerateRain = 'images/moderate_rain.json';
-  static const String canchaTennisImagesRain = 'images/rain.json';
+  static const String canchaTennisImagesModerateRain =
+      'images/moderate_rain.json';
+  static const String canchaTennisImagesSun = 'images/sun.json';
   static const String imagesBall = 'images/ball.json';
+  static const String imagesHeavyRain = 'images/heavy_rain.json';
   static const String imagesModerateRain = 'images/moderate_rain.json';
-  static const String imagesRain = 'images/rain.json';
-  static const String imagesSend = 'images/send.json';
   static const String imagesSun = 'images/sun.json';
-
 }

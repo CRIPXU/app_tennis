@@ -8,7 +8,7 @@ Widget contentInfo({
   TextStyle textStyle = const TextStyle(fontWeight: FontWeight.normal);
 
   return Container(
-    color: Colors.grey.withOpacity(0.1),
+    color: Colors.grey.withOpacity(0.2),
     padding: const EdgeInsets.all(10),
     child: Column(
       children: [

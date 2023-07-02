@@ -109,93 +109,78 @@ class _AddAgendamientoPageState extends State<AddAgendamientoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: isLoading,
-      builder: (context, value, __) {
-        return Stack(
-          children: [
-            Scaffold(
-              appBar: AppBar(
-                title: const Text('📃Agregar Agendamiento📃'),
-              ),
-              body: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Lottie.asset('images/ball.json',
-                        fit: BoxFit.cover, height: 150),
-                    DropdownButtonFormField<int>(
-                      value: selectedCancha,
-                      onChanged: (value) {
-                        setState(() {
-                          selectedCancha = value;
-                        });
-                      },
-                      items: canchas.entries.map<DropdownMenuItem<int>>(
-                        (entry) {
-                          final int index = entry.key;
-                          final String value = entry.value;
-                          return DropdownMenuItem<int>(
-                            value: index,
-                            child: Text('Cancha $value'),
-                          );
-                        },
-                      ).toList(),
-                      decoration: const InputDecoration(
-                        labelText: 'Cancha',
-                      ),
-                    ),
-                    TextField(
-                      controller: nombreController,
-                      decoration: const InputDecoration(labelText: 'Usuario'),
-                    ),
-                    const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      child: const Text('Seleccionar Fecha'),
-                      onPressed: () {
-                        showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
-                        ).then((pickedDate) {
-                          if (pickedDate != null) {
-                            setState(() {
-                              selectedDate = pickedDate;
-                            });
-                          }
-                        });
-                      },
-                    ),
-                    // Aquí puedes añadir el campo para el nombre de la persona realizando el agendamiento
-                    const SizedBox(height: 16.0),
-                    ElevatedButton(
-                      onPressed: () async {
-                        FocusScope.of(context).unfocus();
-                        isLoading.value = true;
-
-                        await Future.delayed(const Duration(seconds: 3));
-
-                        isLoading.value = false;
-
-                        saveAgendamiento();
-                        // Aquí debes implementar la lógica para guardar el agendamiento localmente
-                        //Navigator.pop(context);
-                      },
-                      child: const Text('Guardar Agendamiento'),
-                    ),
-                  ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Agregar Agendamiento'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Lottie.asset('images/ball.json', height: 250),
+              DropdownButtonFormField<int>(
+                value: selectedCancha,
+                onChanged: (value) {
+                  setState(() {
+                    selectedCancha = value;
+                  });
+                },
+                items: canchas.entries.map<DropdownMenuItem<int>>(
+                  (entry) {
+                    final int index = entry.key;
+                    final String value = entry.value;
+                    return DropdownMenuItem<int>(
+                      value: index,
+                      child: Text('Cancha $value'),
+                    );
+                  },
+                ).toList(),
+                decoration: const InputDecoration(
+                  labelText: 'Cancha',
                 ),
               ),
-            ),
-            if (value) const Positioned.fill(child: Center(child: LoadingCustom()))
-          ],
-        );
-      },
+              TextField(
+                controller: nombreController,
+                decoration: const InputDecoration(labelText: 'Nombre'),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                child: const Icon(Icons.calendar_month, size: 30),
+                onPressed: () {
+                  showDatePicker(
+                    context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  ).then((pickedDate) {
+                    if (pickedDate != null) {
+                      setState(() {
+                        selectedDate = pickedDate;
+                      });
+                    }
+                  });
+                },
+              ),
+              // Aquí puedes añadir el campo para el nombre de la persona realizando el agendamiento
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                style: ButtonStyle(
+                  fixedSize: MaterialStateProperty.all(const Size(350, 80)),
+                  elevation: MaterialStateProperty.all(5),
+                ),
+                onPressed: () {
+                  saveAgendamiento();
+                  // Aquí debes implementar la lógica para guardar el agendamiento localmente
+                  //Navigator.pop(context);
+                },
+                child: const Text('Guardar Agendamiento'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
-
-

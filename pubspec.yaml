@@ -71,9 +71,9 @@ flutter:
   assets:
     - images/
     - images/ball.json
+    - images/heavy_rain.json
     - images/moderate_rain.json
-    - images/rain.json
-    - images/send.json
+    - images/sun.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
